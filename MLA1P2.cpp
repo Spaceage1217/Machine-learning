@@ -67,8 +67,7 @@ int main(){
       history[k].i=i;
       history[k].m=m;
       printCM();
-      cout <<endl;
-      cout<<"Merges:"<<endl;
+      cout<<"\nMerges:"<<endl;
       cout<<"(P"<<history[k].m<<") merges with -> (P"<<history[k].i<<")"<<endl;
       updateMatrix(i,m);
       active[m] = 0;
