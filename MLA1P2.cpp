@@ -51,19 +51,31 @@ void printCM();
 void printHistory();
 void saveClusterPoints(int index0,int index1);
 double sim(Point o, Point p);
-double sim(int i, int m, int j);
-void updateMatrix(int i, int m);
+double simLinkage(int i, int m, int j);
+double simComplete(int i, int m, int j);
+double simCentroid(int i, int m, int j);
+void updateMatrix(int i, int m, int type);
 int main(){
+  int type;
+  cout<<"Enter 1 for simpleLinkage"<<endl;
+  cout<<"Enter 2 for completeLinkage"<<endl;
+  cout<<"Enter 3 for centroidLinkage"<<endl;
+  cin>>type;
+  if(type>3 && type<1){
+    cout<<"invalid option terminating program"<<endl;
+    return -1;
+  }
+
   for(int o = 0; o < setSize; o++)
   {
     P[o].clusterPoints.push_back(set[o]);
-    cout<<P[o].clusterPoints[0].x<<","<<P[o].clusterPoints[0].y<<endl;
-    for (int p = 0; p< setSize; p++)
+    for (int p = 0; p < setSize; p++)
     {
       cluster[o][p] = sim(set[o],set[p]);
     }
     active[o] = 1;
   }
+
   cout<<"Starting Set"<<endl;
   double distance=0.0;
   for(int k = 0; k < setSize-1;k++)
@@ -80,89 +92,13 @@ int main(){
       cout<<"(P"<<history[k].m<<") merges with -> (P"<<history[k].i<<") at distance "<<distance<<endl;
       saveClusterPoints(history[k].m,history[k].i);
       cout<<endl;
-      updateMatrix(i,m);
+      updateMatrix(i,m,type);
       active[m] = 0;
   }
    cout<<"\nFinal result:"<<endl;
    printCM();
    printHistory();
-   for( int v =0; v<setSize;v++)
-   {
-    cout<< P[0].clusterPoints[v].x<<","<<P[0].clusterPoints[v].y<<"\n";
-   }
    return 0;
-}
-
-
-void updateMatrix(int i, int m){
-  for(int j =0;j<setSize;j++){
-    if(m!=j&&i!=j){
-      double val = sim(i,m,j);
-      cluster[i][j]= val;
-      cluster[j][i]= val;
-    }
-  }
-}
-
-void saveClusterPoints(int index0,int index1){
-  //for saving cluster points for centroid
-  int index[2];
-  index[0]=index0;
-  index[1]=index1;
-  clusterContents c1 = P[index[1]];
-  clusterContents c2 = P[index[0]];
-  P[index[1]].clusterPoints.reserve(c1.clusterPoints.size()+c2.clusterPoints.size());
-  P[index[1]].clusterPoints.insert(P[index[1]].clusterPoints.end(),c2.clusterPoints.begin(),c2.clusterPoints.end());
-}
-
-double sim(Point o, Point p){
-  // cout<<"HEY IM POint"<<o.x<<","<<o.y<<" and "<<p.x<<","<<p.y<<endl;
-
-  double xDiff = o.x - p.x;
-  double yDiff = o.y - p.y;
-  double distance = sqrt(pow(xDiff,2) + pow(yDiff,2));
-  return distance;
-}
-
-double sim(int i, int m, int j){
-  //cout<<"TEST TO SEE -->"<<m<<"combines with"<<i<<endl;
-  cout<<"\ncurrently in p["<<m<<"]:"<<endl;
-  for( int v =0; v<P[m].clusterPoints.size();v++)
-  {
-   cout<< P[m].clusterPoints[v].x<<","<<P[m].clusterPoints[v].y<<"\n";
-  }
-  cout<<"\ncurrently in p["<<i<<"]:"<<endl;
-  for( int v =0; v<P[i].clusterPoints.size();v++)
-  {
-   cout<< P[i].clusterPoints[v].x<<","<<P[i].clusterPoints[v].y<<"\n";
-  }
-
-  double min = cluster[i][j];
-  if(min>cluster[m][j]){
-     min = cluster[m][j];
-  }
-  return min;
-}
-
-double simComplete(int i, int m, int j){
-  double min = cluster[i][j];
-  if(min<cluster[m][j]){
-     min = cluster[m][j];
-  }
-  return min;
-}
-
-double simCentroid(int i, int m, int j){
-  Point centroid1.x=0;
-  centroid1.y=0;
-  Point centroid2.x=0;
-  centroid2.y=0;
-  
-
-
-
-
-  return min;
 }
 
 void argmax(){
@@ -185,6 +121,91 @@ void argmax(){
     }
   }
 }
+
+void updateMatrix(int i, int m, int type){
+  double val;
+  for(int j =0;j<setSize;j++){
+    if(m!=j&&i!=j){
+      if(type==1){
+         val = simLinkage(i,m,j);
+      }
+      else if(type==2){
+         val = simComplete(i,m,j);
+      }
+      else{
+         val = simCentroid(i,m,j);
+      }
+
+      cluster[i][j]= val;
+      cluster[j][i]= val;
+    }
+  }
+}
+
+double sim(Point o, Point p){
+  double xDiff = o.x - p.x;
+  double yDiff = o.y - p.y;
+  double distance = sqrt(pow(xDiff,2) + pow(yDiff,2));
+  return distance;
+}
+
+double simLinkage(int i, int m, int j){
+  cout<<"im running link"<<endl;
+  double min = cluster[i][j];
+  if(min>cluster[m][j]){
+     min = cluster[m][j];
+  }
+  return min;
+}
+
+double simComplete(int i, int m, int j){
+  cout<<"im running comp"<<endl;
+  double min = cluster[i][j];
+  if(min<cluster[m][j]){
+     min = cluster[m][j];
+  }
+  return min;
+}
+
+void saveClusterPoints(int index0,int index1){
+  //for saving cluster points for centroid
+  int index[2];
+  index[0]=index0;
+  index[1]=index1;
+  clusterContents c1 = P[index[1]];
+  clusterContents c2 = P[index[0]];
+  P[index[1]].clusterPoints.reserve(c1.clusterPoints.size()+c2.clusterPoints.size());
+  P[index[1]].clusterPoints.insert(P[index[1]].clusterPoints.end(),c2.clusterPoints.begin(),c2.clusterPoints.end());
+}
+double simCentroid(int i, int m, int j){
+  cout<<"im running cent"<<endl;
+  Point centroid1;
+  Point centroid2;
+  centroid1.x = 0;
+  centroid1.y = 0;
+  centroid2.x = 0;
+  centroid2.y = 0;
+  int centroid1_size = P[m].clusterPoints.size();
+  int centroid2_size = P[i].clusterPoints.size();
+  for( int v = 0; v < centroid1_size; v++)
+  {
+   centroid1.x+=P[m].clusterPoints[v].x;
+   centroid1.y+=P[m].clusterPoints[v].y;
+  }
+  for( int v = 0; v < centroid2_size; v++)
+  {
+    centroid2.x+=P[i].clusterPoints[v].x;
+    centroid2.y+=P[i].clusterPoints[v].y;
+  }
+
+  centroid1.x = centroid1.x/centroid1_size;
+  centroid1.y = centroid1.y/centroid1_size;
+  centroid2.x = centroid2.x/centroid2_size;
+  centroid2.y = centroid2.x/centroid2_size;
+
+  return sim(centroid1,centroid2);
+}
+
 
 void printCM(){
   for(int o = 0; o<setSize; o++){
