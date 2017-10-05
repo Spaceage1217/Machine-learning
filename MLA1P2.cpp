@@ -82,15 +82,25 @@ int main(){
   {
       int i,m;
       argmax();
+
       i = minIndex[0];
       m = minIndex[1];
       history[k].i=i;
       history[k].m=m;
+
       printCM();
       distance += cluster[i][m];
       cout<<"\nMerges:"<<endl;
       cout<<"(P"<<history[k].m<<") merges with -> (P"<<history[k].i<<") at distance "<<distance<<endl;
-      saveClusterPoints(history[k].m,history[k].i);
+      saveClusterPoints(m,i);
+      //format better
+    //   for(int b=0;b<setSize;b++){
+    //   cout<<"points in cluster P"<<b<<endl;
+    //   for(int v=0;v<P[b].clusterPoints.size();v++){
+    //     cout<<P[b].clusterPoints[v].x<<","<<P[b].clusterPoints[v].y<<" ";
+    //   }
+    //   cout<<endl;
+    // }
       cout<<endl;
       updateMatrix(i,m,type);
       active[m] = 0;
@@ -98,6 +108,8 @@ int main(){
    cout<<"\nFinal result:"<<endl;
    printCM();
    printHistory();
+
+
    return 0;
 }
 
@@ -164,15 +176,16 @@ double simComplete(int i, int m, int j){
   return min;
 }
 
-void saveClusterPoints(int index0,int index1){
+void saveClusterPoints(int m,int i){
   //for saving cluster points for centroid
-  int index[2];
-  index[0]=index0;
-  index[1]=index1;
-  clusterContents c1 = P[index[1]];
-  clusterContents c2 = P[index[0]];
-  P[index[1]].clusterPoints.reserve(c1.clusterPoints.size()+c2.clusterPoints.size());
-  P[index[1]].clusterPoints.insert(P[index[1]].clusterPoints.end(),c2.clusterPoints.begin(),c2.clusterPoints.end());
+  for( int v = 0; v< P[m].clusterPoints.size();v++)
+  {
+    P[i].clusterPoints.push_back(P[m].clusterPoints.at(v));
+  }
+
+
+
+
 }
 double simCentroid(int i, int m, int j){
   Point centroid1;
@@ -181,23 +194,23 @@ double simCentroid(int i, int m, int j){
   centroid1.y = 0;
   centroid2.x = 0;
   centroid2.y = 0;
-  int centroid1_size = P[m].clusterPoints.size();
-  int centroid2_size = P[i].clusterPoints.size();
+  int centroid1_size = P[i].clusterPoints.size();
+  int centroid2_size = P[j].clusterPoints.size();
   for( int v = 0; v < centroid1_size; v++)
   {
-   centroid1.x+=P[m].clusterPoints[v].x;
-   centroid1.y+=P[m].clusterPoints[v].y;
+   centroid1.x+=P[i].clusterPoints[v].x;
+   centroid1.y+=P[i].clusterPoints[v].y;
   }
   for( int v = 0; v < centroid2_size; v++)
   {
-    centroid2.x+=P[i].clusterPoints[v].x;
-    centroid2.y+=P[i].clusterPoints[v].y;
+    centroid2.x+=P[j].clusterPoints[v].x;
+    centroid2.y+=P[j].clusterPoints[v].y;
   }
   centroid1.x = centroid1.x/centroid1_size;
   centroid1.y = centroid1.y/centroid1_size;
-  centroid2.x = centroid2.x/centroid2_size;
-  centroid2.y = centroid2.x/centroid2_size;
 
+  centroid2.x = centroid2.x/centroid2_size;
+  centroid2.y = centroid2.y/centroid2_size;
   return sim(centroid1,centroid2);
 }
 
@@ -205,23 +218,30 @@ double simCentroid(int i, int m, int j){
 void printCM(){
   for(int o = 0; o<setSize; o++){
 
-    if(o<10 && active[o]!=0){
+    // if(o<10 && active[o]!=0){
+    //   cout<<" P"<<o<<" ";
+    // }
+    // else if(active[o]!=0){
+    //   cout<<"P"<<o<<" ";
+    // }
+    if(o<10 ){
       cout<<" P"<<o<<" ";
     }
-    else if(active[o]!=0){
+    else{
       cout<<"P"<<o<<" ";
     }
 
+
     for(int p = 0; p<setSize; p++)
     {
-      //cout<<"|"<<fixed<<setprecision(2)<<cluster[o][p]<<" ";
-      if(cluster[o][p]!=0&&active[o]!=0){
-        cout<<"|"<<fixed<<setprecision(2)<<cluster[o][p]<<" ";
-      }
-      else if(active[o]!=0){
-        cout<<"|"<<fixed<<setprecision(2)<<cluster[o][p]<<" ";
-        break;
-      }
+      cout<<"|"<<fixed<<setprecision(2)<<cluster[o][p]<<" ";
+      // if(cluster[o][p]!=0&&active[o]!=0){
+      //   cout<<"|"<<fixed<<setprecision(2)<<cluster[o][p]<<" ";
+      // }
+      // else if(active[o]!=0){
+      //   cout<<"|"<<fixed<<setprecision(2)<<cluster[o][p]<<" ";
+      //   break;
+      // }
     }
     cout<<endl;
   }
@@ -233,3 +253,38 @@ void printHistory(){
     cout<<"(P"<<history[k].m<<") merges with -> (P"<<history[k].i<<")"<<endl;
   }
 }
+
+// 2 .2
+// 3.01 2
+// 4.02 2
+// 5.03 2
+// 6.04 2
+// 7.05 2
+// 2 3.5
+// 3.01 3.5
+// 4.02 3.5
+// 5.03 3.5
+// 6.04 3.5
+// 7.05 3.5
+//
+
+
+// 2,.2
+// 3.01,2
+// 4.02,2
+// 5.03,2
+// 6.04,2
+// 7.05,2
+// 2,3.5
+// 3.01,3.5
+// 4.02,3.5
+// 5.03,3.5
+// 6.04,3.5
+// 7.05,3.5
+
+// .4 .53
+// .22 .38
+// .35 .32
+// .26 .19
+// .08 .41
+// .45 .30
