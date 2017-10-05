@@ -89,18 +89,10 @@ int main(){
       history[k].m=m;
 
       printCM();
-      distance += cluster[i][m];
+      distance = cluster[i][m];
       cout<<"\nMerges:"<<endl;
       cout<<"(P"<<history[k].m<<") merges with -> (P"<<history[k].i<<") at distance "<<distance<<endl;
       saveClusterPoints(m,i);
-      //format better
-    //   for(int b=0;b<setSize;b++){
-    //   cout<<"points in cluster P"<<b<<endl;
-    //   for(int v=0;v<P[b].clusterPoints.size();v++){
-    //     cout<<P[b].clusterPoints[v].x<<","<<P[b].clusterPoints[v].y<<" ";
-    //   }
-    //   cout<<endl;
-    // }
       cout<<endl;
       updateMatrix(i,m,type);
       active[m] = 0;
@@ -216,35 +208,35 @@ double simCentroid(int i, int m, int j){
 
 
 void printCM(){
-  for(int o = 0; o<setSize; o++){
-
-    // if(o<10 && active[o]!=0){
-    //   cout<<" P"<<o<<" ";
-    // }
-    // else if(active[o]!=0){
-    //   cout<<"P"<<o<<" ";
-    // }
-    if(o<10 ){
-      cout<<" P"<<o<<" ";
-    }
-    else{
-      cout<<"P"<<o<<" ";
-    }
-
-
-    for(int p = 0; p<setSize; p++)
-    {
-      cout<<"|"<<fixed<<setprecision(2)<<cluster[o][p]<<" ";
-      // if(cluster[o][p]!=0&&active[o]!=0){
-      //   cout<<"|"<<fixed<<setprecision(2)<<cluster[o][p]<<" ";
-      // }
-      // else if(active[o]!=0){
-      //   cout<<"|"<<fixed<<setprecision(2)<<cluster[o][p]<<" ";
-      //   break;
-      // }
-    }
-    cout<<endl;
-  }
+  // for(int o = 0; o<setSize; o++){
+  //
+  //   // if(o<10 && active[o]!=0){
+  //   //   cout<<" P"<<o<<" ";
+  //   // }
+  //   // else if(active[o]!=0){
+  //   //   cout<<"P"<<o<<" ";
+  //   // }
+  //   if(o<10 ){
+  //     cout<<" P"<<o<<" ";
+  //   }
+  //   else{
+  //     cout<<"P"<<o<<" ";
+  //   }
+  //
+  //
+  //   for(int p = 0; p<setSize; p++)
+  //   {
+  //     cout<<"|"<<fixed<<setprecision(2)<<cluster[o][p]<<" ";
+  //     // if(cluster[o][p]!=0&&active[o]!=0){
+  //     //   cout<<"|"<<fixed<<setprecision(2)<<cluster[o][p]<<" ";
+  //     // }
+  //     // else if(active[o]!=0){
+  //     //   cout<<"|"<<fixed<<setprecision(2)<<cluster[o][p]<<" ";
+  //     //   break;
+  //     // }
+  //   }
+  //   cout<<endl;
+  // }
 }
 
 void printHistory(){
@@ -253,38 +245,3 @@ void printHistory(){
     cout<<"(P"<<history[k].m<<") merges with -> (P"<<history[k].i<<")"<<endl;
   }
 }
-
-// 2 .2
-// 3.01 2
-// 4.02 2
-// 5.03 2
-// 6.04 2
-// 7.05 2
-// 2 3.5
-// 3.01 3.5
-// 4.02 3.5
-// 5.03 3.5
-// 6.04 3.5
-// 7.05 3.5
-//
-
-
-// 2,.2
-// 3.01,2
-// 4.02,2
-// 5.03,2
-// 6.04,2
-// 7.05,2
-// 2,3.5
-// 3.01,3.5
-// 4.02,3.5
-// 5.03,3.5
-// 6.04,3.5
-// 7.05,3.5
-
-// .4 .53
-// .22 .38
-// .35 .32
-// .26 .19
-// .08 .41
-// .45 .30

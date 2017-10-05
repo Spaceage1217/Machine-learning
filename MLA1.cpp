@@ -151,8 +151,9 @@ void init(int K){
 
 Point argmin(int K,int i){
   int closestCenter = 0;
-  int min = sim(set[i],centers[0]);
-   for( int j=1; j<K; j++)
+  //int min = sim(set[i],centers[0]);
+  double min = 10000;
+   for( int j=0; j<K; j++)
    {
       if(min > sim(set[i],centers[j]))
       {
