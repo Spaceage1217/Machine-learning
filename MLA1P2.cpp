@@ -135,9 +135,8 @@ void updateMatrix(int i, int m, int type){
       else{
          val = simCentroid(i,m,j);
       }
-
-      cluster[i][j]= val;
-      cluster[j][i]= val;
+      cluster[i][j] = val;
+      cluster[j][i] = val;
     }
   }
 }
@@ -150,7 +149,6 @@ double sim(Point o, Point p){
 }
 
 double simLinkage(int i, int m, int j){
-  cout<<"im running link"<<endl;
   double min = cluster[i][j];
   if(min>cluster[m][j]){
      min = cluster[m][j];
@@ -159,7 +157,6 @@ double simLinkage(int i, int m, int j){
 }
 
 double simComplete(int i, int m, int j){
-  cout<<"im running comp"<<endl;
   double min = cluster[i][j];
   if(min<cluster[m][j]){
      min = cluster[m][j];
@@ -178,7 +175,6 @@ void saveClusterPoints(int index0,int index1){
   P[index[1]].clusterPoints.insert(P[index[1]].clusterPoints.end(),c2.clusterPoints.begin(),c2.clusterPoints.end());
 }
 double simCentroid(int i, int m, int j){
-  cout<<"im running cent"<<endl;
   Point centroid1;
   Point centroid2;
   centroid1.x = 0;
@@ -197,7 +193,6 @@ double simCentroid(int i, int m, int j){
     centroid2.x+=P[i].clusterPoints[v].x;
     centroid2.y+=P[i].clusterPoints[v].y;
   }
-
   centroid1.x = centroid1.x/centroid1_size;
   centroid1.y = centroid1.y/centroid1_size;
   centroid2.x = centroid2.x/centroid2_size;
