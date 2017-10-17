@@ -50,7 +50,7 @@ int main(){
   cout<<"what test 0-2\n";
   cin>>index;
 
-  for( int i =0; i<K;i++){
+  for( int i = 0; i<K;i++){
     cout<<"it is ..."<< set[argMin(test[index])].className<<endl;
   }
 
