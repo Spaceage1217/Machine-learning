@@ -37,23 +37,60 @@ void readSet();
 void readTests();
 double sim(iris a, iris b);
 int argMin(iris a);
+void reset();
+string predicition(int K, int test);
 
 int main(){
-  int K = 0;
+  int K3 = 3;
+  int K5 = 5;
   int index = 0;
   readTests();
   readSet();
   normalize();
   normalizeTest();
-  cout<<"How many KNN?\n";
-  cin>>K;
-  cout<<"what test 0-2\n";
-  cin>>index;
 
-  for( int i = 0; i<K;i++){
-    cout<<"it is ..."<< set[argMin(test[index])].className<<endl;
+
+  for( int i = 0; i<3;i++){
+    for( int k = 0; k<5;k+=2){
+      cout<<"For Test "<<i<<" with "<<k+1<<"-NN The predicition is "<<predicition(k+1,i)<<endl;
+      reset();
+    }
+    cout<<endl;
   }
+}
 
+void reset(){
+  for(int i =0; i<setSize; i++)
+  {
+    active[i]=1;
+  }
+}
+string predicition(int K, int testNum){
+  double A = 0, B = 0, C = 0, k = K;
+  for( int i = 0; i<K;i++)
+  {
+      if(set[argMin(test[testNum])].className == "Iris-setosa"){
+         A+=1;
+      }
+      else if(set[argMin(test[testNum])].className == "Iris-versicolor"){
+         B+=1;
+      }
+      else{
+        C+=1;
+      }
+  }
+  A = A/K;
+  B = B/K;
+  C = C/K;
+  if((A/K)>(B/K) && (A/K)>(C/K)){
+    return "Iris-setosa";
+  }
+  else if((B/K)>(A/K) && (B/K)>(C/K)){
+    return "Iris-Versicolour";
+  }
+  else{
+    return "Iris-virginica";
+  }
 }
 
 void readTests(){

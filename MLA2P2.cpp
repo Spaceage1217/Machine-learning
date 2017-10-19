@@ -15,41 +15,62 @@ struct auto_mpg{
  double acceleration;
 };
 
-double mpgMin = 99999999999999,
+double mpgMin = 999999,
  mpgMax =-1,
- displacementMin=9999999999999,
+ displacementMin=9999,
  displacementMax=-1,
- accelerationMin=9999999999999,
+ accelerationMin=9999999,
  accelerationMax=-1;
-int cylindersMin = 9999999999999,
+int cylindersMin = 999999,
 cylindersMax = -1,
-horsepowerMin = 999999999999999,
-horsepowerMax = -1
-weightMin = 999999999999,
+horsepowerMin = 999999,
+horsepowerMax = -1,
+weightMin = 99999,
 weightMax = -1;
 
 const int setSize = 401;
 const int subSetSize = 398;
 
 vector<auto_mpg> set (setSize);
-double m[5]= {0,0,0,0,0};
-double b = 1;
+double m[6]= {1,1,1,1,1,1};
+double prevErrorSummation =0;
 
 //functions
 void readSet();
-void gradientDescent();
-
+bool gradientDescent();
+void normalize();
+void setMinMax();
+void printData();
 int main(){
  readSet();
- gradientDescent();
+ setMinMax();
+ normalize();
+ double threshHold = .0005;
+ bool stop = false;
+ double oldWeightSum=0, newWeightSum=0;
+ for( int i =0; i<10000; i++){
+    for( int j = 0; j <6;j++){oldWeightSum += m[j];}
+    gradientDescent();
+    for( int j = 0; j <6;j++){newWeightSum += m[j];}
+
+    if(abs(oldWeightSum-newWeightSum)<=threshHold){stop = true;}
+    if(stop){
+      cout<<"stoped at itteration "<<i<<endl;
+      break;
+    }
+ }
+ int counter = 1;
  double guess;
-
-   guess = (m[0]*set[398].cylinders)+(m[1]*set[398].displacement)+
-   (m[2]*set[398].horsepower)+(m[3]*set[398].weight)+ (m[4]*set[398].acceleration)+b;
-   cout<<"guess mpg for the first one is..."<<guess;
-   cout<<m[0]<<endl;
-
-  //cout<<set[400].mpg<<" "<<set[400].acceleration<<endl;
+ guess = (m[0])+(m[1]*set[397].cylinders)+(m[2]*set[397].displacement)+
+  (m[3]*set[397].horsepower)+(m[4]*set[397].weight)+ (m[5]*set[397].acceleration);
+  cout<<"guess mpg for "<<counter<< " is..."<<guess<<endl;
+  cout<< "actual value is ..."<< set[397].mpg<<endl;
+  for( int i = subSetSize; i<setSize; i++){
+     guess = (m[0])+(m[1]*set[i].cylinders)+(m[2]*set[i].displacement)+
+     (m[3]*set[i].horsepower)+(m[4]*set[i].weight)+ (m[5]*set[i].acceleration);
+     cout<<"guess mpg for "<<counter<< " is..."<<guess<<endl;
+     counter++;
+   }
 
 }
 
@@ -75,12 +96,6 @@ void readSet(){
 }
 void setMinMax(){
   for( int i =0; i<subSetSize;i++){
-     if(mpgMin>set[i].mpg){
-        mpgMin=set[i].mpg;
-     }
-     if(mpgMax<set[i].mpg){
-        mpgMax=set[i].mpg;
-     }
      if(cylindersMin>set[i].cylinders){
         cylindersMin=set[i].cylinders;
      }
@@ -113,75 +128,52 @@ void setMinMax(){
      }
   }
 }
-
 void normalize(){
   for( int i = 0; i< setSize; i++ ){
-    set[i].mpg = (set[i].mpg - mpgMin)/(mpgMin-mpgMax);
-    set[i].cylinders = (set[i].cylinders - cylindersMin)/(cylindersMin-cylindersMax);
+    set[i].cylinders = (set[i].cylinders - cylindersMin)/(cylindersMax-cylindersMin);
     set[i].displacement = (set[i].displacement - displacementMin)/(displacementMax-displacementMin);
     set[i].horsepower = (set[i].horsepower  - horsepowerMin)/(horsepowerMax-horsepowerMin);
     set[i].weight = (set[i].weight  - weightMin)/(weightMax-weightMin);
-    set[i].accelaration = (set[i].accelaration  - accelarationMin)/(accelarationMax-accelarationMin);
+    set[i].acceleration = (set[i].acceleration  - accelerationMin)/(accelerationMax-accelerationMin);
   }
 }
-//
-// void gradientDescent(){
-//
-//   double learning_rate = 0.05;
-//
-//   for( int j =0; j<6; j++){
-//     for(int i = 0; i < setSize; i++)
-//     {
-//       double y = auto_mpg[i].mpg;
-//       if(j == 0){
-//         int xj = auto_mpg[i].cylinders;
-//       }
-//       else if( j == 1)
-//       {
-//           double xj = auto_mpg[i].displacement;
-//       }
-//       else if( j == 2)
-//       {
-//           int x2 = auto_mpg[i].horsepower;
-//       }
-//       else if( j == 3)
-//       {
-//           int x3 = auto_mpg[i].weight;
-//       }
-//       else if( j == 4)
-//       {
-//           double x4 = auto_mpg[i].acceleration;
-//       }
-//     }
-//
-//     m[j]=m[j]-learning_rate*(1/setSize)*val;
-//   }
-//
-// }
-
-
-
-void gradientDescent(){
-
-  double learning_rate = 0.05;
-  for(int i = 0; i < subSetSize; i++)
-  {
-    double y = set[i].mpg;
-    int x0 = set[i].cylinders;
-    double x1 = set[i].displacement;
-    int x2 = set[i].horsepower;
-    int x3 = set[i].weight;
-    double x4 = set[i].acceleration;
-    double guess = (m[0]*x0)+(m[1]*x1)+(m[2]*x2)+(m[3]*x3)+(m[4]*x4)+b;
-    cout<<" guess in func is "<< guess<<endl;
-    double error =  guess - y ;
-    cout<<"error in func is "<< error<<endl;
-    m[0] = (m[0] + error) * x0 * learning_rate;
-    cout<<"now m[0] is "<< m[0]<<endl;
-    m[1] = (m[1] + error) * x1 * learning_rate;
-    m[2] = (m[2] + error) * x2 * learning_rate;
-    m[3] = (m[3] + error) * x3 * learning_rate;
-    m[4] = (m[4] + error) * x4 * learning_rate;
-    b = b + (error) * learning_rate;
+void printData(){
+  for( int i =0; i<setSize; i++){
+    cout<<set[i].mpg<<" "<<set[i].cylinders<<" "<<set[i].displacement<<" "<<set[i].horsepower
+    <<" "<<set[i].weight<<" "<<set[i].acceleration<<endl;
+  }
+}
+bool gradientDescent(){
+  double learning_rate = 0.005;
+  double summation = 0;
+  for( int j =0; j<6; j++){
+    for(int i = 0; i < subSetSize; i++){
+      double y = set[i].mpg;
+      double xj = 1;
+      double x1 = set[i].cylinders;
+      double x2 = set[i].displacement;
+      double x3 = set[i].horsepower;
+      double x4 = set[i].weight;
+      double x5 = set[i].acceleration;
+      if(j == 1){
+        xj = set[i].cylinders;
+      }
+      else if( j == 2){
+        xj = set[i].displacement;
+      }
+      else if( j == 3){
+        xj = set[i].horsepower;
+      }
+      else if( j == 4){
+        xj = set[i].weight;
+      }
+      else if( j == 5){
+        xj = set[i].acceleration;
+      }
+      double guess = (m[0])+(m[1]*x1)+(m[2]*x2)+(m[3]*x3)+(m[4]*x4)+(m[5]*x5);
+      double error = guess-y;
+      summation +=((error)*xj);
+    }
+    m[j]=m[j]-(learning_rate/subSetSize)*summation;
   }
 }
