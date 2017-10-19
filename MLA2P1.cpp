@@ -86,7 +86,7 @@ string predicition(int K, int testNum){
     return "Iris-setosa";
   }
   else if((B/K)>(A/K) && (B/K)>(C/K)){
-    return "Iris-Versicolour";
+    return "Iris-Versicolor";
   }
   else{
     return "Iris-virginica";

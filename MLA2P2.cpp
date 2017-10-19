@@ -5,7 +5,13 @@
 #include<iomanip>
 #include<fstream>
 using namespace std;
-
+/*
+    Grader please note that there are two versions of batch graident descent in my program
+    The one that runs is based off the formula in lu's note
+    The other one is commented out and the formula can be found here:
+ https://medium.com/towards-data-science/difference-between-batch-gradient-descent-and-stochastic-gradient-descent-1187f1291aa1
+ After running the 2 versions I have found that the differences are minimal and after talking to lu she said that it shouldnt matter much
+*/
 struct auto_mpg{
  double mpg;
  int cylinders;
@@ -37,10 +43,12 @@ double prevErrorSummation =0;
 
 //functions
 void readSet();
-bool gradientDescent();
+void gradientDescent();
 void normalize();
 void setMinMax();
 void printData();
+
+
 int main(){
  readSet();
  setMinMax();
@@ -48,27 +56,25 @@ int main(){
  double threshHold = .0005;
  bool stop = false;
  double oldWeightSum=0, newWeightSum=0;
+ int counter = 1;
+ double guess;
+
  for( int i =0; i<10000; i++){
     for( int j = 0; j <6;j++){oldWeightSum += m[j];}
     gradientDescent();
     for( int j = 0; j <6;j++){newWeightSum += m[j];}
 
-    if(abs(oldWeightSum-newWeightSum)<=threshHold){stop = true;}
+    if(abs(oldWeightSum-newWeightSum)<=threshHold){stop = false;}
     if(stop){
       cout<<"stoped at itteration "<<i<<endl;
       break;
     }
  }
- int counter = 1;
- double guess;
- guess = (m[0])+(m[1]*set[397].cylinders)+(m[2]*set[397].displacement)+
-  (m[3]*set[397].horsepower)+(m[4]*set[397].weight)+ (m[5]*set[397].acceleration);
-  cout<<"guess mpg for "<<counter<< " is..."<<guess<<endl;
-  cout<< "actual value is ..."<< set[397].mpg<<endl;
+
   for( int i = subSetSize; i<setSize; i++){
      guess = (m[0])+(m[1]*set[i].cylinders)+(m[2]*set[i].displacement)+
      (m[3]*set[i].horsepower)+(m[4]*set[i].weight)+ (m[5]*set[i].acceleration);
-     cout<<"guess mpg for "<<counter<< " is..."<<guess<<endl;
+     cout<<"predicition mpg for "<<counter<< " is..."<<guess<<endl;
      counter++;
    }
 
@@ -143,8 +149,8 @@ void printData(){
     <<" "<<set[i].weight<<" "<<set[i].acceleration<<endl;
   }
 }
-bool gradientDescent(){
-  double learning_rate = 0.005;
+void gradientDescent(){
+  double learning_rate = 0.0005;
   double summation = 0;
   for( int j =0; j<6; j++){
     for(int i = 0; i < subSetSize; i++){
@@ -171,9 +177,44 @@ bool gradientDescent(){
         xj = set[i].acceleration;
       }
       double guess = (m[0])+(m[1]*x1)+(m[2]*x2)+(m[3]*x3)+(m[4]*x4)+(m[5]*x5);
-      double error = guess-y;
+      double error = y-guess;
       summation +=((error)*xj);
     }
-    m[j]=m[j]-(learning_rate/subSetSize)*summation;
+    m[j]=m[j]+((learning_rate)*summation);
   }
 }
+
+// void gradientDescent(){
+//   double learning_rate = 0.005;
+//   double summation = 0;
+//   for( int j =0; j<6; j++){
+//     for(int i = 0; i < subSetSize; i++){
+//       double y = set[i].mpg;
+//       double xj = 1;
+//       double x1 = set[i].cylinders;
+//       double x2 = set[i].displacement;
+//       double x3 = set[i].horsepower;
+//       double x4 = set[i].weight;
+//       double x5 = set[i].acceleration;
+//       if(j == 1){
+//         xj = set[i].cylinders;
+//       }
+//       else if( j == 2){
+//         xj = set[i].displacement;
+//       }
+//       else if( j == 3){
+//         xj = set[i].horsepower;
+//       }
+//       else if( j == 4){
+//         xj = set[i].weight;
+//       }
+//       else if( j == 5){
+//         xj = set[i].acceleration;
+//       }
+//       double guess = (m[0])+(m[1]*x1)+(m[2]*x2)+(m[3]*x3)+(m[4]*x4)+(m[5]*x5);
+//       double error = guess-y;
+//       summation +=((error)*xj);
+//     }
+//     m[j]=m[j]-(learning_rate/subSetSize)*summation;
+//   }
+// }
